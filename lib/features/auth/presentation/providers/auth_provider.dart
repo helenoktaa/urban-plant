@@ -107,4 +107,64 @@ Future<bool> _verifyTokenToBackend() async {
   return true;
 }
 
+// ─── Login dengan Email & Password ───────────────────────
+  Future<bool> loginWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    _setLoading();
+    try {
+      final credential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      _firebaseUser = credential.user;
+
+
+      // Cek apakah email sudah diverifikasi
+      if (!(_firebaseUser?.emailVerified ?? false)) {
+        _status = AuthStatus.emailNotVerified;
+        notifyListeners();
+        return false;
+      }
+
+
+      // Email terverifikasi → dapatkan token Firebase → kirim ke backend
+      return await _verifyTokenToBackend();
+    } on FirebaseAuthException catch (e) {
+      _setError(_mapFirebaseError(e.code));
+      return false;
+    }
+  }
+
+// ─── Login dengan Google ──────────────────────────────────
+  Future<bool> loginWithGoogle() async {
+    _setLoading();
+    try {
+      final googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        _setError('Login Google dibatalkan');
+        return false;
+      }
+
+
+      final googleAuth  = await googleUser.authentication;
+      final credential  = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken:     googleAuth.idToken,
+      );
+      final userCred = await _auth.signInWithCredential(credential);
+      _firebaseUser  = userCred.user;
+
+
+      // Google login → email otomatis terverifikasi
+      return await _verifyTokenToBackend();
+    } catch (e) {
+      _setError('Gagal login dengan Google: $e');
+      return false;
+    }
+  }
+
+
 }
+
