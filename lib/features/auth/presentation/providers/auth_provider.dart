@@ -59,4 +59,52 @@ Future<bool> register({name, email, password}) async {
   return true;
 }
 
+Future<bool> loginAfterEmailVerification() async {
+  _setLoading();
+ 
+  // STEP 1: Reload status user dari server Firebase
+  await _firebaseUser?.reload();
+  _firebaseUser = _auth.currentUser;
+ 
+  if (!(_firebaseUser?.emailVerified ?? false)) {
+    // Belum klik link → kembali ke halaman verify
+    _status = AuthStatus.emailNotVerified;
+    return false;
+  }
+ 
+  // STEP 2: Re-login untuk dapat fresh session & token
+  final credential = await _auth.signInWithEmailAndPassword(
+    email: _tempEmail!,
+    password: _tempPassword!,
+  );
+  _firebaseUser = credential.user;
+  _tempEmail = null;   // Hapus credentials dari memory
+  _tempPassword = null;
+ 
+  // STEP 3: Kirim Firebase token ke backend → dapat JWT
+  return await _verifyTokenToBackend();
+}
+
+Future<bool> _verifyTokenToBackend() async {
+  // Ambil Firebase ID Token (expired tiap 1 jam)
+  final firebaseToken = await _firebaseUser?.getIdToken();
+ 
+  // POST ke backend — DioClient interceptor sudah handle logging
+  final response = await DioClient.instance.post(
+    ApiConstants.verifyToken,
+    data: {'firebase_token': firebaseToken},
+  );
+ 
+  // Backend return JWT milik sistem kita
+  final data = response.data['data'] as Map<String, dynamic>;
+  final backendToken = data['access_token'] as String;
+ 
+  // Simpan aman di device (encrypted)
+  await SecureStorageService.saveToken(backendToken);
+ 
+  _status = AuthStatus.authenticated;
+  notifyListeners();
+  return true;
+}
+
 }
