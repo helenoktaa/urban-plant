@@ -25,6 +25,8 @@ class AuthProvider extends ChangeNotifier {
   User?     _firebaseUser;
   String?   _backendToken;   // Token dari backend (bukan Firebase token)
   String?   _errorMessage;
+  String? _tempEmail;
+  String? _tempPassword;
 
 
   // ─── Getters ─────────────────────────────────────────────
@@ -165,6 +167,60 @@ Future<bool> _verifyTokenToBackend() async {
     }
   }
 
+// ─── Kirim ulang email verifikasi ────────────────────────
+  Future<void> resendVerificationEmail() async {
+    await _firebaseUser?.sendEmailVerification();
+  }
 
+
+  // ─── Cek status verifikasi email (polling) ────────────────
+  Future<bool> checkEmailVerified() async {
+    await _firebaseUser?.reload(); // Refresh data user dari Firebase
+    _firebaseUser = _auth.currentUser;
+
+
+    if (_firebaseUser?.emailVerified ?? false) {
+      return await _verifyTokenToBackend();
+    }
+    return false;
+  }
+
+
+// ─── Logout ───────────────────────────────────────────────
+  Future<void> logout() async {
+    await _auth.signOut();
+    await _googleSignIn.signOut();
+    await SecureStorageService.clearAll();
+    _firebaseUser = null;
+    _backendToken = null;
+    _status = AuthStatus.unauthenticated;
+    notifyListeners();
+  }
+
+// ─── Private Helpers ──────────────────────────────────────
+  void _setLoading() {
+    _status = AuthStatus.loading;
+    _errorMessage = null;
+    notifyListeners();
+  }
+
+
+  void _setError(String message) {
+    _status = AuthStatus.error;
+    _errorMessage = message;
+    notifyListeners();
+  }
+
+
+  String _mapFirebaseError(String code) => switch (code) {
+    'email-already-in-use'  => 'Email sudah terdaftar. Gunakan email lain.',
+    'user-not-found'        => 'Akun tidak ditemukan. Silakan daftar.',
+    'wrong-password'        => 'Password salah. Coba lagi.',
+    'invalid-email'        => 'Format email tidak valid.',
+    'weak-password'        => 'Password terlalu lemah. Minimal 6 karakter.',
+    'network-request-failed'=> 'Tidak ada koneksi internet.',
+    _                      => 'Terjadi kesalahan. Coba lagi.',
+  };
 }
+
 
