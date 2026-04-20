@@ -7,8 +7,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:urban_plant/core/routes/app_router.dart';
 
-import 'package:shopping_tangerang/main.dart';
+import 'package:urban_plant/main.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {

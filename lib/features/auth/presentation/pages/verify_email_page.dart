@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shopping_tangerang/core/routes/app_router.dart';
-import 'package:shopping_tangerang/features/auth/presentation/providers/auth_provider.dart';
-import 'package:shopping_tangerang/features/auth/presentation/widgets/auth_header.dart';
-import 'package:shopping_tangerang/features/auth/presentation/widgets/custom_button.dart';
+import 'package:urban_plant/core/routes/app_router.dart';
+import 'package:urban_plant/features/auth/presentation/providers/auth_provider.dart';
+import 'package:urban_plant/features/auth/presentation/widgets/auth_header.dart';
+import 'package:urban_plant/features/auth/presentation/widgets/custom_button.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   const VerifyEmailPage({super.key});

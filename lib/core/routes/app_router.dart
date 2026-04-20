@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shopping_tangerang/core/services/secure_storage.dart';
-import 'package:shopping_tangerang/core/theme/app_theme.dart';
-import 'package:shopping_tangerang/features/auth/presentation/pages/login_page.dart';
-import 'package:shopping_tangerang/features/auth/presentation/pages/register_page.dart';
-import 'package:shopping_tangerang/features/auth/presentation/pages/verify_email_page.dart';
-import 'package:shopping_tangerang/features/auth/presentation/providers/auth_provider.dart';
-import 'package:shopping_tangerang/features/dashboard/presentation/pages/dashboard_page.dart';
-import 'package:shopping_tangerang/features/dashboard/presentation/providers/product_provider.dart';
+import 'package:urban_plant/core/services/secure_storage.dart';
+import 'package:urban_plant/core/theme/app_theme.dart';
+import 'package:urban_plant/features/auth/presentation/pages/login_page.dart';
+import 'package:urban_plant/features/auth/presentation/pages/register_page.dart';
+import 'package:urban_plant/features/auth/presentation/pages/verify_email_page.dart';
+import 'package:urban_plant/features/auth/presentation/providers/auth_provider.dart';
+import 'package:urban_plant/features/dashboard/presentation/pages/dashboard_page.dart';
+import 'package:urban_plant/features/dashboard/presentation/providers/product_provider.dart';
 
 class AppRouter {
   static const String splash      = '/';

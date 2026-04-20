@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -50,19 +47,30 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyB1IxPw8FEi6SkQzSGVadeTuf5MuxcH3Eo',
-    appId: '1:232180290147:android:20e3a49dc2343da2d9de56',
-    messagingSenderId: '232180290147',
-    projectId: 'shopping-tangerang-ilen',
-    storageBucket: 'shopping-tangerang-ilen.firebasestorage.app',
+    apiKey: 'AIzaSyDO58mfaPImNJzyDu202n5WNdXMofIPk7o',
+    appId: '1:1008378436879:android:7896ae1b42e90b0046727a',
+    messagingSenderId: '1008378436879',
+    projectId: 'urban-plant-a6cb6',
+    storageBucket: 'urban-plant-a6cb6.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDWOhNT9gIog8PR-FtIbrA27VefOBOH4Ro',
-    appId: '1:232180290147:ios:7be177b8311e6a06d9de56',
-    messagingSenderId: '232180290147',
-    projectId: 'shopping-tangerang-ilen',
-    storageBucket: 'shopping-tangerang-ilen.firebasestorage.app',
+    apiKey: 'AIzaSyC7l0g01tQljQzPJEHw4dWwh5J7dRvc5qY',
+    appId: '1:1008378436879:ios:bcd49473ed79810346727a',
+    messagingSenderId: '1008378436879',
+    projectId: 'urban-plant-a6cb6',
+    storageBucket: 'urban-plant-a6cb6.firebasestorage.app',
     iosBundleId: 'com.example.shoppingTangerang',
   );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyA5WWnp6LAgL0DLikSGfwcxa4ZNkYaXM2k',
+    appId: '1:1008378436879:web:93a62fe19a2523b646727a',
+    messagingSenderId: '1008378436879',
+    projectId: 'urban-plant-a6cb6',
+    authDomain: 'urban-plant-a6cb6.firebaseapp.com',
+    storageBucket: 'urban-plant-a6cb6.firebasestorage.app',
+    measurementId: 'G-K5QT6T4LTJ',
+  );
+
 }

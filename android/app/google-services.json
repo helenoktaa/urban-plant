@@ -1,21 +1,40 @@
 {
   "project_info": {
-    "project_number": "232180290147",
-    "project_id": "shopping-tangerang-ilen",
-    "storage_bucket": "shopping-tangerang-ilen.firebasestorage.app"
+    "project_number": "1008378436879",
+    "project_id": "urban-plant-a6cb6",
+    "storage_bucket": "urban-plant-a6cb6.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:232180290147:android:20e3a49dc2343da2d9de56",
+        "mobilesdk_app_id": "1:1008378436879:android:7896ae1b42e90b0046727a",
         "android_client_info": {
-          "package_name": "com.example.shopping_tangerang"
+          "package_name": "com.example.urban_plant"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyB1IxPw8FEi6SkQzSGVadeTuf5MuxcH3Eo"
+          "current_key": "AIzaSyDO58mfaPImNJzyDu202n5WNdXMofIPk7o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1008378436879:android:85eb0818bf0308ce46727a",
+        "android_client_info": {
+          "package_name": "urbanplant.id"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDO58mfaPImNJzyDu202n5WNdXMofIPk7o"
         }
       ],
       "services": {

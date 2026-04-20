@@ -1,7 +1,7 @@
-import 'package:shopping_tangerang/core/constants/api_constants.dart';
-import 'package:shopping_tangerang/core/services/dio_client.dart';
-import 'package:shopping_tangerang/features/dashboard/data/models/product_model.dart';
-import 'package:shopping_tangerang/features/dashboard/domain/repositories/product_repository.dart';
+import 'package:urban_plant/core/constants/api_constants.dart';
+import 'package:urban_plant/core/services/dio_client.dart';
+import 'package:urban_plant/features/dashboard/data/models/product_model.dart';
+import 'package:urban_plant/features/dashboard/domain/repositories/product_repository.dart';
 
 class ProductRepositoryImpl implements ProductRepository {
   @override

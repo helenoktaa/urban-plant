@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:shopping_tangerang/core/constants/api_constants.dart';
-import 'package:shopping_tangerang/core/services/secure_storage.dart';
+import 'package:urban_plant/core/constants/api_constants.dart';
+import 'package:urban_plant/core/services/secure_storage.dart';
 
 class DioClient {
   static Dio? _instance;

@@ -2,14 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:shopping_tangerang/core/routes/app_router.dart';
-import 'package:shopping_tangerang/features/auth/presentation/providers/auth_provider.dart';
-import 'package:shopping_tangerang/features/auth/presentation/widgets/auth_header.dart';
-import 'package:shopping_tangerang/features/auth/presentation/widgets/custom_button.dart';
-import 'package:shopping_tangerang/features/auth/presentation/widgets/custom_text_field.dart';
-import 'package:shopping_tangerang/features/auth/presentation/widgets/divider_with_text.dart';
-import 'package:shopping_tangerang/features/auth/presentation/widgets/google_sign_in_button.dart';
-import 'package:shopping_tangerang/features/auth/presentation/widgets/loading_overlay.dart';
+import 'package:urban_plant/core/routes/app_router.dart';
+import 'package:urban_plant/features/auth/presentation/providers/auth_provider.dart';
+import 'package:urban_plant/features/auth/presentation/widgets/auth_header.dart';
+import 'package:urban_plant/features/auth/presentation/widgets/custom_button.dart';
+import 'package:urban_plant/features/auth/presentation/widgets/custom_text_field.dart';
+import 'package:urban_plant/features/auth/presentation/widgets/divider_with_text.dart';
+import 'package:urban_plant/features/auth/presentation/widgets/google_sign_in_button.dart';
+import 'package:urban_plant/features/auth/presentation/widgets/loading_overlay.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

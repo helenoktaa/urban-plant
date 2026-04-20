@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shopping_tangerang/core/constants/app_colors.dart';
+import 'package:urban_plant/core/constants/app_colors.dart';
 
 class AppTheme {
   static ThemeData get light {
