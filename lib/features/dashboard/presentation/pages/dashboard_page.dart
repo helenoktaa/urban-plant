@@ -535,7 +535,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       fontSize: 13,
                       color: Color(0xFF1B5E20),
                     ),
-                    maxLines: 2,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
