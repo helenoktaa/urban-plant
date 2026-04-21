@@ -5,6 +5,7 @@ import 'package:urban_plant/features/auth/presentation/providers/auth_provider.d
 import 'package:urban_plant/features/dashboard/data/models/product_model.dart';
 import 'package:urban_plant/features/dashboard/presentation/providers/product_provider.dart';
 import 'package:urban_plant/features/dashboard/presentation/pages/product_detail_page.dart';
+import 'package:urban_plant/features/dashboard/presentation/providers/wishlist_provider.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -57,6 +58,7 @@ class _DashboardPageState extends State<DashboardPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ProductProvider>().fetchProducts();
+      context.read<WishlistProvider>().fetchWishlist();
     });
   }
 
@@ -500,23 +502,30 @@ class _DashboardPageState extends State<DashboardPage> {
                   top: 8,
                   right: 8,
                   child: GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 4,
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.favorite_outline,
-                        size: 16,
-                        color: Colors.grey,
+                    onTap: () =>
+                        context.read<WishlistProvider>().toggleWishlist(p),
+                    child: Consumer<WishlistProvider>(
+                      builder: (context, wishlist, _) => Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 4,
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          wishlist.isWishlisted(p.id)
+                              ? Icons.favorite
+                              : Icons.favorite_outline,
+                          size: 16,
+                          color: wishlist.isWishlisted(p.id)
+                              ? Colors.red
+                              : Colors.grey,
+                        ),
                       ),
                     ),
                   ),
@@ -535,7 +544,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       fontSize: 13,
                       color: Color(0xFF1B5E20),
                     ),
-                    maxLines: 1, 
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
@@ -557,7 +566,6 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 6),
                   const SizedBox(height: 4),
                   Row(
                     children: [
@@ -581,6 +589,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 6),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -619,7 +628,6 @@ class _DashboardPageState extends State<DashboardPage> {
     return SafeArea(
       child: Column(
         children: [
-          // Header
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
             child: Row(
@@ -635,33 +643,55 @@ class _DashboardPageState extends State<DashboardPage> {
               ],
             ),
           ),
-          // Empty state
-          const Expanded(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.favorite_outline,
-                    size: 80,
-                    color: Color(0xFFE8F5E9),
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    'Wishlist masih kosong',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF1B5E20),
+          Expanded(
+            child: Consumer<WishlistProvider>(
+              builder: (context, wishlist, _) {
+                if (wishlist.isLoading) {
+                  return const Center(
+                    child: CircularProgressIndicator(color: Color(0xFF2E7D32)),
+                  );
+                }
+                if (wishlist.wishlistProducts.isEmpty) {
+                  return const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.favorite_outline,
+                          size: 80,
+                          color: Color(0xFFE8F5E9),
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          'Wishlist masih kosong',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF1B5E20),
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Tambahkan tanaman favoritmu!',
+                          style: TextStyle(fontSize: 13, color: Colors.grey),
+                        ),
+                      ],
                     ),
+                  );
+                }
+                return GridView.builder(
+                  padding: const EdgeInsets.all(16),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.58,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
                   ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Tambahkan tanaman favoritmu!',
-                    style: TextStyle(fontSize: 13, color: Colors.grey),
-                  ),
-                ],
-              ),
+                  itemCount: wishlist.wishlistProducts.length,
+                  itemBuilder: (context, i) =>
+                      _buildProductCard(wishlist.wishlistProducts[i]),
+                );
+              },
             ),
           ),
         ],
