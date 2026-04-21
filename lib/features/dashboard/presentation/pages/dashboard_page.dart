@@ -6,6 +6,7 @@ import 'package:urban_plant/features/dashboard/data/models/product_model.dart';
 import 'package:urban_plant/features/dashboard/presentation/providers/product_provider.dart';
 import 'package:urban_plant/features/dashboard/presentation/pages/product_detail_page.dart';
 import 'package:urban_plant/features/dashboard/presentation/providers/wishlist_provider.dart';
+import 'package:urban_plant/features/dashboard/presentation/providers/cart_provider.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -601,16 +602,31 @@ class _DashboardPageState extends State<DashboardPage> {
                           fontSize: 13,
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF2E7D32),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(
-                          Icons.add,
-                          size: 16,
-                          color: Colors.white,
+                      GestureDetector(
+                        onTap: () async {
+                          await context.read<CartProvider>().addToCart(p.id, 1);
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                '${p.name} ditambahkan ke keranjang!',
+                              ),
+                              backgroundColor: const Color(0xFF2E7D32),
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF2E7D32),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.shopping_cart_outlined,
+                            size: 16,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ],
