@@ -8,6 +8,7 @@ import 'package:urban_plant/features/auth/presentation/pages/verify_email_page.d
 import 'package:urban_plant/features/auth/presentation/providers/auth_provider.dart';
 import 'package:urban_plant/features/dashboard/presentation/pages/dashboard_page.dart';
 import 'package:urban_plant/features/dashboard/presentation/providers/product_provider.dart';
+import 'package:urban_plant/features/dashboard/presentation/providers/wishlist_provider.dart';
 
 class AppRouter {
   static const String splash      = '/';
@@ -62,6 +63,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ProductProvider()),
+        ChangeNotifierProvider(create: (_) => WishlistProvider()),
       ],
       child: MaterialApp(
         title:                  'My App',
