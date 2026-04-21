@@ -586,14 +586,218 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildWishlistPage() {
-    return const Center(child: Text('Wishlist'));
+    return SafeArea(
+      child: Column(
+        children: [
+          // Header
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+            child: Row(
+              children: [
+                const Text(
+                  'Wishlist',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1B5E20),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Empty state
+          const Expanded(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.favorite_outline,
+                    size: 80,
+                    color: Color(0xFFE8F5E9),
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    'Wishlist masih kosong',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF1B5E20),
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Tambahkan tanaman favoritmu!',
+                    style: TextStyle(fontSize: 13, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildCartPage() {
-    return const Center(child: Text('Cart'));
+    return SafeArea(
+      child: Column(
+        children: [
+          // Header
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+            child: Row(
+              children: [
+                const Text(
+                  'Keranjang',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1B5E20),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Empty state
+          const Expanded(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.shopping_cart_outlined,
+                    size: 80,
+                    color: Color(0xFFE8F5E9),
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    'Keranjang masih kosong',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF1B5E20),
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Yuk belanja tanaman dulu!',
+                    style: TextStyle(fontSize: 13, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildProfilePage(AuthProvider auth) {
-    return const Center(child: Text('Profile'));
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            // Avatar
+            Container(
+              width: 90,
+              height: 90,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color(0xFFE8F5E9),
+                border: Border.all(color: const Color(0xFF2E7D32), width: 2),
+              ),
+              child: const Icon(
+                Icons.person,
+                size: 50,
+                color: Color(0xFF2E7D32),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              auth.firebaseUser?.displayName ?? 'User',
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1B5E20),
+              ),
+            ),
+            Text(
+              auth.firebaseUser?.email ?? '',
+              style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+            ),
+            const SizedBox(height: 24),
+            // Menu
+            _buildProfileMenu(
+              Icons.shopping_bag_outlined,
+              'Pesanan Saya',
+              () {},
+            ),
+            _buildProfileMenu(
+              Icons.favorite_outline,
+              'Wishlist',
+              () => setState(() => _currentIndex = 1),
+            ),
+            _buildProfileMenu(Icons.location_on_outlined, 'Alamat', () {}),
+            _buildProfileMenu(Icons.settings_outlined, 'Pengaturan', () {}),
+            const SizedBox(height: 16),
+            // Logout
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.logout, color: Colors.red),
+                label: const Text(
+                  'Keluar',
+                  style: TextStyle(color: Colors.red),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: Colors.red),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: () async {
+                  await auth.logout();
+                  if (!mounted) return;
+                  Navigator.pushReplacementNamed(context, AppRouter.login);
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileMenu(IconData icon, String title, VoidCallback onTap) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6),
+        ],
+      ),
+      child: ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: const Color(0xFFE8F5E9),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, color: const Color(0xFF2E7D32), size: 20),
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        ),
+        trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+        onTap: onTap,
+      ),
+    );
   }
 }
