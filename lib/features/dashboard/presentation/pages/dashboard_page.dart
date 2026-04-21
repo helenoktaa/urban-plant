@@ -4,6 +4,7 @@ import 'package:urban_plant/core/routes/app_router.dart';
 import 'package:urban_plant/features/auth/presentation/providers/auth_provider.dart';
 import 'package:urban_plant/features/dashboard/data/models/product_model.dart';
 import 'package:urban_plant/features/dashboard/presentation/providers/product_provider.dart';
+import 'package:urban_plant/features/dashboard/presentation/pages/product_detail_page.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -453,17 +454,16 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildProductCard(ProductModel p) {
-    return Container(
+  return GestureDetector(
+    onTap: () => Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => ProductDetailPage(product: p)),
+    ),
+    child: Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 8, offset: const Offset(0, 2))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -471,9 +471,7 @@ class _DashboardPageState extends State<DashboardPage> {
           Stack(
             children: [
               ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(16),
-                ),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                 child: Image.network(
                   p.imageUrl,
                   height: 130,
@@ -482,17 +480,12 @@ class _DashboardPageState extends State<DashboardPage> {
                   errorBuilder: (_, __, ___) => Container(
                     height: 130,
                     color: Colors.grey.shade100,
-                    child: const Icon(
-                      Icons.local_florist,
-                      size: 40,
-                      color: Colors.green,
-                    ),
+                    child: const Icon(Icons.local_florist, size: 40, color: Colors.green),
                   ),
                 ),
               ),
               Positioned(
-                top: 8,
-                right: 8,
+                top: 8, right: 8,
                 child: GestureDetector(
                   onTap: () {},
                   child: Container(
@@ -500,18 +493,9 @@ class _DashboardPageState extends State<DashboardPage> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 4,
-                        ),
-                      ],
+                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4)],
                     ),
-                    child: const Icon(
-                      Icons.favorite_outline,
-                      size: 16,
-                      color: Colors.grey,
-                    ),
+                    child: const Icon(Icons.favorite_outline, size: 16, color: Colors.grey),
                   ),
                 ),
               ),
@@ -522,58 +506,26 @@ class _DashboardPageState extends State<DashboardPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  p.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
-                    color: Color(0xFF1B5E20),
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                Text(p.name,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1B5E20)),
+                  maxLines: 2, overflow: TextOverflow.ellipsis),
                 const SizedBox(height: 4),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE8F5E9),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    p.category,
-                    style: const TextStyle(
-                      fontSize: 10,
-                      color: Color(0xFF2E7D32),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(color: const Color(0xFFE8F5E9), borderRadius: BorderRadius.circular(6)),
+                  child: Text(p.category,
+                    style: const TextStyle(fontSize: 10, color: Color(0xFF2E7D32), fontWeight: FontWeight.w500)),
                 ),
                 const SizedBox(height: 6),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Rp ${_formatPrice(p.price)}',
-                      style: const TextStyle(
-                        color: Color(0xFF2E7D32),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13,
-                      ),
-                    ),
+                    Text('Rp ${_formatPrice(p.price)}',
+                      style: const TextStyle(color: Color(0xFF2E7D32), fontWeight: FontWeight.bold, fontSize: 13)),
                     Container(
                       padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF2E7D32),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(
-                        Icons.add,
-                        size: 16,
-                        color: Colors.white,
-                      ),
+                      decoration: BoxDecoration(color: const Color(0xFF2E7D32), borderRadius: BorderRadius.circular(8)),
+                      child: const Icon(Icons.add, size: 16, color: Colors.white),
                     ),
                   ],
                 ),
@@ -582,8 +534,9 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildWishlistPage() {
     return SafeArea(
