@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:urban_plant/features/dashboard/data/models/product_model.dart';
+import 'package:provider/provider.dart';
+import 'package:urban_plant/features/dashboard/presentation/providers/cart_provider.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final ProductModel product;
@@ -13,9 +15,24 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   int _quantity = 1;
 
   final List<Map<String, dynamic>> _dummyReviews = [
-    {'name': 'Siti Rahayu', 'rating': 5, 'comment': 'Tanamannya sehat dan segar, packaging aman sampai rumah!', 'date': '20 Apr 2026'},
-    {'name': 'Budi Santoso', 'rating': 4, 'comment': 'Bagus banget, sesuai foto. Pengiriman cepat.', 'date': '18 Apr 2026'},
-    {'name': 'Dewi Lestari', 'rating': 5, 'comment': 'Sudah beli 3x, selalu puas! Tanaman benar-benar terawat.', 'date': '15 Apr 2026'},
+    {
+      'name': 'Siti Rahayu',
+      'rating': 5,
+      'comment': 'Tanamannya sehat dan segar, packaging aman sampai rumah!',
+      'date': '20 Apr 2026',
+    },
+    {
+      'name': 'Budi Santoso',
+      'rating': 4,
+      'comment': 'Bagus banget, sesuai foto. Pengiriman cepat.',
+      'date': '18 Apr 2026',
+    },
+    {
+      'name': 'Dewi Lestari',
+      'rating': 5,
+      'comment': 'Sudah beli 3x, selalu puas! Tanaman benar-benar terawat.',
+      'date': '15 Apr 2026',
+    },
   ];
 
   String _formatPrice(double price) {
@@ -48,16 +65,26 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               onTap: () => Navigator.pop(context),
               child: Container(
                 margin: const EdgeInsets.all(8),
-                decoration: BoxDecoration(color: Colors.white.withOpacity(0.9), shape: BoxShape.circle),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.9),
+                  shape: BoxShape.circle,
+                ),
                 child: const Icon(Icons.arrow_back, color: Color(0xFF2E7D32)),
               ),
             ),
             actions: [
               Container(
                 margin: const EdgeInsets.all(8),
-                decoration: BoxDecoration(color: Colors.white.withOpacity(0.9), shape: BoxShape.circle),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.9),
+                  shape: BoxShape.circle,
+                ),
                 child: IconButton(
-                  icon: const Icon(Icons.favorite_outline, color: Color(0xFF2E7D32), size: 20),
+                  icon: const Icon(
+                    Icons.favorite_outline,
+                    color: Color(0xFF2E7D32),
+                    size: 20,
+                  ),
                   onPressed: () {},
                 ),
               ),
@@ -68,7 +95,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Container(
                   color: const Color(0xFFE8F5E9),
-                  child: const Icon(Icons.local_florist, size: 80, color: Color(0xFF2E7D32)),
+                  child: const Icon(
+                    Icons.local_florist,
+                    size: 80,
+                    color: Color(0xFF2E7D32),
+                  ),
                 ),
               ),
             ),
@@ -90,47 +121,100 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFFE8F5E9),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Text(p.category,
-                            style: const TextStyle(fontSize: 12, color: Color(0xFF2E7D32), fontWeight: FontWeight.w600)),
+                          child: Text(
+                            p.category,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Color(0xFF2E7D32),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
                         const Spacer(),
                         // Rating
                         Row(
                           children: [
-                            const Icon(Icons.star, color: Colors.amber, size: 16),
+                            const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                              size: 16,
+                            ),
                             const SizedBox(width: 4),
-                            Text(_averageRating.toStringAsFixed(1),
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                            Text(' (${_dummyReviews.length} ulasan)',
-                              style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+                            Text(
+                              _averageRating.toStringAsFixed(1),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                            Text(
+                              ' (${_dummyReviews.length} ulasan)',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade500,
+                              ),
+                            ),
                           ],
                         ),
                       ],
                     ),
                     const SizedBox(height: 10),
-                    Text(p.name,
-                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF1B5E20))),
+                    Text(
+                      p.name,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1B5E20),
+                      ),
+                    ),
                     const SizedBox(height: 8),
-                    Text('Rp ${_formatPrice(p.price)}',
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
+                    Text(
+                      'Rp ${_formatPrice(p.price)}',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF2E7D32),
+                      ),
+                    ),
                     const SizedBox(height: 4),
-                    Text('Stok: ${p.stock} tersedia',
-                      style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+                    Text(
+                      'Stok: ${p.stock} tersedia',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade500,
+                      ),
+                    ),
 
                     const SizedBox(height: 20),
                     const Divider(),
                     const SizedBox(height: 12),
 
                     // Deskripsi
-                    const Text('Deskripsi', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1B5E20))),
+                    const Text(
+                      'Deskripsi',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1B5E20),
+                      ),
+                    ),
                     const SizedBox(height: 8),
-                    Text(p.description,
-                      style: TextStyle(fontSize: 14, color: Colors.grey.shade700, height: 1.6)),
+                    Text(
+                      p.description,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade700,
+                        height: 1.6,
+                      ),
+                    ),
 
                     const SizedBox(height: 20),
                     const Divider(),
@@ -139,7 +223,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     // Quantity
                     Row(
                       children: [
-                        const Text('Jumlah', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1B5E20))),
+                        const Text(
+                          'Jumlah',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1B5E20),
+                          ),
+                        ),
                         const Spacer(),
                         Container(
                           decoration: BoxDecoration(
@@ -151,13 +242,25 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             children: [
                               IconButton(
                                 icon: const Icon(Icons.remove, size: 18),
-                                onPressed: () { if (_quantity > 1) setState(() => _quantity--); },
+                                onPressed: () {
+                                  if (_quantity > 1)
+                                    setState(() => _quantity--);
+                                },
                                 color: const Color(0xFF2E7D32),
                               ),
-                              Text('$_quantity', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                              Text(
+                                '$_quantity',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                               IconButton(
                                 icon: const Icon(Icons.add, size: 18),
-                                onPressed: () { if (_quantity < p.stock) setState(() => _quantity++); },
+                                onPressed: () {
+                                  if (_quantity < p.stock)
+                                    setState(() => _quantity++);
+                                },
                                 color: const Color(0xFF2E7D32),
                               ),
                             ],
@@ -174,53 +277,104 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Ulasan', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1B5E20))),
-                        Text('${_dummyReviews.length} ulasan', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+                        const Text(
+                          'Ulasan',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1B5E20),
+                          ),
+                        ),
+                        Text(
+                          '${_dummyReviews.length} ulasan',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade500,
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 12),
 
-                    ..._dummyReviews.map((r) => Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6)],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 16,
-                                backgroundColor: const Color(0xFFE8F5E9),
-                                child: Text(r['name'][0], style: const TextStyle(color: Color(0xFF2E7D32), fontWeight: FontWeight.bold)),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(r['name'], style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-                                    Text(r['date'], style: TextStyle(fontSize: 11, color: Colors.grey.shade400)),
-                                  ],
+                    ..._dummyReviews.map(
+                      (r) => Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.04),
+                              blurRadius: 6,
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 16,
+                                  backgroundColor: const Color(0xFFE8F5E9),
+                                  child: Text(
+                                    r['name'][0],
+                                    style: const TextStyle(
+                                      color: Color(0xFF2E7D32),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        r['name'],
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                      Text(
+                                        r['date'],
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          color: Colors.grey.shade400,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Row(
+                                  children: List.generate(
+                                    5,
+                                    (i) => Icon(
+                                      i < r['rating']
+                                          ? Icons.star
+                                          : Icons.star_outline,
+                                      color: Colors.amber,
+                                      size: 14,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              r['comment'],
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey.shade700,
                               ),
-                              Row(
-                                children: List.generate(5, (i) => Icon(
-                                  i < r['rating'] ? Icons.star : Icons.star_outline,
-                                  color: Colors.amber, size: 14,
-                                )),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Text(r['comment'], style: TextStyle(fontSize: 13, color: Colors.grey.shade700)),
-                        ],
+                            ),
+                          ],
+                        ),
                       ),
-                    )),
+                    ),
 
                     const SizedBox(height: 100),
                   ],
@@ -236,7 +390,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
         decoration: BoxDecoration(
           color: Colors.white,
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 12, offset: const Offset(0, -2))],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 12,
+              offset: const Offset(0, -2),
+            ),
+          ],
         ),
         child: Row(
           children: [
@@ -244,23 +404,53 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Total', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                Text('Rp ${_formatPrice(widget.product.price * _quantity)}',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
+                const Text(
+                  'Total',
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+                Text(
+                  'Rp ${_formatPrice(widget.product.price * _quantity)}',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2E7D32),
+                  ),
+                ),
               ],
             ),
             const SizedBox(width: 16),
             Expanded(
               child: ElevatedButton.icon(
                 icon: const Icon(Icons.shopping_cart_outlined, size: 20),
-                label: const Text('Tambah ke Keranjang', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                label: const Text(
+                  'Tambah ke Keranjang',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF2E7D32),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-                onPressed: () {},
+                onPressed: () async {
+                  await context.read<CartProvider>().addToCart(
+                    widget.product.id,
+                    _quantity,
+                  );
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        '${widget.product.name} ditambahkan ke keranjang!',
+                      ),
+                      backgroundColor: const Color(0xFF2E7D32),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                  Navigator.pop(context); // balik ke dashboard
+                },
               ),
             ),
           ],
