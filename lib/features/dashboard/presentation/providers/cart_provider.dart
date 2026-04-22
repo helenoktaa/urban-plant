@@ -15,18 +15,17 @@ class CartProvider extends ChangeNotifier {
   String? get error => _error;
   bool get isLoading => _status == CartStatus.loading;
 
-  double get totalPrice =>
-      _items.fold(0, (sum, item) => sum + item.subtotal);
+  double get totalPrice => _items.fold(0, (sum, item) => sum + item.subtotal);
 
-  int get totalItems =>
-      _items.fold(0, (sum, item) => sum + item.quantity);
+  int get totalItems => _items.fold(0, (sum, item) => sum + item.quantity);
 
   Future<void> fetchCart() async {
     _status = CartStatus.loading;
     notifyListeners();
     try {
       final response = await DioClient.instance.get(ApiConstants.cart);
-      final List<dynamic> data = response.data['data'] ?? [];
+      final responseData = response.data['data'];
+      final List<dynamic> data = responseData['items'] ?? [];
       _items = data.map((e) => CartItemModel.fromJson(e)).toList();
       _status = CartStatus.loaded;
     } catch (e) {
