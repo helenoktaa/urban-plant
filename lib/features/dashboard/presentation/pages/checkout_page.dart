@@ -41,7 +41,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
       body: Form(
         key: _formKey,
         child: Column(
-          children: [],
+          children: [
+            const Text('Ringkasan Pesanan'),
+            ...cart.items.map((item) => Text(item.product?.name ?? '-')),
+          ],
         ),
       ),
     );
