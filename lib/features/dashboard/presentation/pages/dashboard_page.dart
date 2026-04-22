@@ -7,6 +7,8 @@ import 'package:urban_plant/features/dashboard/presentation/providers/product_pr
 import 'package:urban_plant/features/dashboard/presentation/pages/product_detail_page.dart';
 import 'package:urban_plant/features/dashboard/presentation/providers/wishlist_provider.dart';
 import 'package:urban_plant/features/dashboard/presentation/providers/cart_provider.dart';
+import 'package:urban_plant/features/dashboard/presentation/pages/checkout_page.dart';
+
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -989,9 +991,12 @@ class _DashboardPageState extends State<DashboardPage> {
                       const SizedBox(width: 16),
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: () {
-                            // TODO: navigate ke checkout page
-                          },
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const CheckoutPage(),
+                            ),
+                          ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF2E7D32),
                             foregroundColor: Colors.white,
