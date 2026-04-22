@@ -119,7 +119,7 @@ class _LoginPageState extends State<LoginPage> {
                   const AuthHeader(
                     icon: Icons.lock_open_outlined,
                     title: 'Selamat Datang',
-                    subtitle: 'Masuk ke akun Anda untuk melanjutkan',
+                    subtitle: 'Masuk dan pilih tanaman favoritmu',
                   ),
                   const SizedBox(height: 32),
                   CustomTextField(

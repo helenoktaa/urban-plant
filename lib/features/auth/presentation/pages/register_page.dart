@@ -76,7 +76,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   const AuthHeader(
                     icon: Icons.person_add_alt_1,
                     title: 'Buat Akun Baru',
-                    subtitle: 'Lengkapi data diri Anda untuk mendaftar',
+                    subtitle: 'Daftar dan temukan tanaman favoritmu',
                   ),
                   const SizedBox(height: 32),
 
