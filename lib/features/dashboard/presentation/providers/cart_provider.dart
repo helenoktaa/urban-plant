@@ -26,6 +26,9 @@ class CartProvider extends ChangeNotifier {
       final response = await DioClient.instance.get(ApiConstants.cart);
       final responseData = response.data['data'];
       final List<dynamic> data = responseData['items'] ?? [];
+      debugPrint(
+        '=== First cart item: ${data.isNotEmpty ? data[0] : "empty"} ===',
+      );
       _items = data.map((e) => CartItemModel.fromJson(e)).toList();
       _status = CartStatus.loaded;
     } catch (e) {
