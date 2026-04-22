@@ -156,7 +156,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         child: const Text(
                           'Masuk',
                           style: TextStyle(
-                            color: Color(0xFF1565C0),
+                            color: Color(0xFF2E7D32),
                             fontWeight: FontWeight.bold,
                           ),
                         ),

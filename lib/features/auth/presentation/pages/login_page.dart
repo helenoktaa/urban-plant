@@ -186,7 +186,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: const Text(
                           'Daftar',
                           style: TextStyle(
-                            color: Color(0xFF1565C0),
+                            color: Color(0xFF2E7D32),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
