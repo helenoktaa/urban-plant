@@ -10,6 +10,7 @@ import 'package:urban_plant/features/dashboard/presentation/pages/dashboard_page
 import 'package:urban_plant/features/dashboard/presentation/providers/product_provider.dart';
 import 'package:urban_plant/features/dashboard/presentation/providers/wishlist_provider.dart';
 import 'package:urban_plant/features/dashboard/presentation/providers/cart_provider.dart';
+import 'package:urban_plant/features/dashboard/presentation/providers/order_provider.dart';
 
 class AppRouter {
   static const String splash      = '/';
@@ -66,6 +67,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ProductProvider()),
         ChangeNotifierProvider(create: (_) => WishlistProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => OrderProvider()),
       ],
       child: MaterialApp(
         title:                  'Urban Plant',

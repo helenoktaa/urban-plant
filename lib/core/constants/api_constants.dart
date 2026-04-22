@@ -9,6 +9,7 @@ class ApiConstants {
   static const String wishlist = '/wishlist';
   static const String cart = '/cart';
   static const String checkout = '/orders/checkout';
+  static const String orders = '/orders';
 
   // Timeout
   static const int connectTimeout = 15000;

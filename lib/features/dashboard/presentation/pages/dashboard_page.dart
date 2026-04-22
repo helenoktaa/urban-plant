@@ -8,7 +8,7 @@ import 'package:urban_plant/features/dashboard/presentation/pages/product_detail
 import 'package:urban_plant/features/dashboard/presentation/providers/wishlist_provider.dart';
 import 'package:urban_plant/features/dashboard/presentation/providers/cart_provider.dart';
 import 'package:urban_plant/features/dashboard/presentation/pages/checkout_page.dart';
-
+import 'package:urban_plant/features/dashboard/presentation/pages/orders_page.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -1065,7 +1065,10 @@ class _DashboardPageState extends State<DashboardPage> {
             _buildProfileMenu(
               Icons.shopping_bag_outlined,
               'Pesanan Saya',
-              () {},
+              () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const OrdersPage()),
+              ),
             ),
             _buildProfileMenu(
               Icons.favorite_outline,
