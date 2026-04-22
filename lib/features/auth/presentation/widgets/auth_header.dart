@@ -17,13 +17,9 @@ class AuthHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Image.asset(
-            'assets/images/urban-plant.png',
-            width: 120,
-            height: 80,
-          ),
-        
-        const SizedBox(height: 20),
+        Image.asset('assets/images/urban-plant.png', width: 150, height: 150),
+
+        const SizedBox(height: 10),
         Text(
           title,
           style: const TextStyle(
