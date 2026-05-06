@@ -9,6 +9,7 @@ import 'package:urban_plant/features/dashboard/presentation/providers/wishlist_p
 import 'package:urban_plant/features/dashboard/presentation/providers/cart_provider.dart';
 import 'package:urban_plant/features/dashboard/presentation/pages/checkout_page.dart';
 import 'package:urban_plant/features/dashboard/presentation/pages/orders_page.dart';
+import 'package:urban_plant/core/providers/theme_provider.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -1026,6 +1027,7 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildProfilePage(AuthProvider auth) {
+    final themeProvider = context.watch<ThemeProvider>();
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -1077,6 +1079,44 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
             _buildProfileMenu(Icons.location_on_outlined, 'Alamat', () {}),
             _buildProfileMenu(Icons.settings_outlined, 'Pengaturan', () {}),
+            Container(
+              margin: const EdgeInsets.only(bottom: 10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 6,
+                  ),
+                ],
+              ),
+              child: ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE8F5E9),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    themeProvider.isDarkMode
+                        ? Icons.dark_mode
+                        : Icons.light_mode,
+                    color: const Color(0xFF2E7D32),
+                    size: 20,
+                  ),
+                ),
+                title: const Text(
+                  'Dark Mode',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                ),
+                trailing: Switch(
+                  value: themeProvider.isDarkMode,
+                  onChanged: (_) => themeProvider.toggleTheme(),
+                  activeColor: const Color(0xFF2E7D32),
+                ),
+              ),
+            ),
             const SizedBox(height: 16),
             // Logout
             SizedBox(

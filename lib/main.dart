@@ -17,7 +17,6 @@ void main() async {
   // Inisialisasi Firebase SEBELUM runApp
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  final themeProvider = ThemeProvider();
 
   runApp(
     MultiProvider(
