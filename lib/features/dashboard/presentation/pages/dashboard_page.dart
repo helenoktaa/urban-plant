@@ -440,7 +440,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
-                          childAspectRatio: 0.72,
+                          childAspectRatio: 0.68,
                           crossAxisSpacing: 12,
                           mainAxisSpacing: 12,
                         ),
@@ -703,7 +703,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   padding: const EdgeInsets.all(16),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    childAspectRatio: 0.58,
+                    childAspectRatio: 0.68,
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 12,
                   ),

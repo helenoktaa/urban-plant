@@ -83,8 +83,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   Future<void> _payWithDompetKampus() async {
     final cart = context.read<CartProvider>();
-
-    // Checkout dulu untuk dapat order ID
     setState(() => _isLoading = true);
     try {
       final response = await DioClient.instance.post(
@@ -103,43 +101,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
         final totalAmount =
             (order['total_amount'] as num?)?.toDouble() ?? cart.totalPrice;
 
-        // Build deep link URL
         final url = PaymentDeeplinkService.buildPaymentUrl(
           orderId: orderId,
           amount: totalAmount,
           description: 'Pembayaran Urban Plant #$orderId',
         );
 
-        // Launch dompet kampus global
         final uri = Uri.parse(url);
-        if (await canLaunchUrl(uri)) {
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
-
-          // Listen callback dari dompet
-          PaymentDeeplinkService().onCallback.first.then((callback) {
-            if (!mounted) return;
-            if (callback.isSuccess) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => OrderSuccessPage(order: order),
-                ),
-              );
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Pembayaran dibatalkan')),
-              );
-            }
-          });
-        } else {
-          if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Dompet Kampus Global tidak terinstall!'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
       }
     } catch (e) {
       if (!mounted) return;
