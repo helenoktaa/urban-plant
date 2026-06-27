@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:urban_plant/core/services/payment_deeplink_service.dart';
 import 'package:urban_plant/core/routes/app_router.dart';
 import 'package:urban_plant/features/auth/presentation/providers/auth_provider.dart';
 import 'package:urban_plant/features/dashboard/presentation/providers/product_provider.dart';
@@ -16,6 +17,10 @@ void main() async {
 
   // Inisialisasi Firebase SEBELUM runApp
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Inisialisasi deep link service
+  await PaymentDeeplinkService().init();
+
 
 
   runApp(
