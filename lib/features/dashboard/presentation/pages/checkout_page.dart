@@ -363,6 +363,35 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         style: TextStyle(fontSize: 12),
                       ),
                     ),
+                    const Divider(height: 1),
+                    // Dompet Kampus Global
+                    RadioListTile<String>(
+                      value: 'dompet_kampus',
+                      groupValue: _paymentMethod,
+                      onChanged: (v) => setState(() => _paymentMethod = v!),
+                      activeColor: const Color(0xFF2E7D32),
+                      title: const Row(
+                        children: [
+                          Icon(
+                            Icons.account_balance_wallet_outlined,
+                            color: Color(0xFF2E7D32),
+                            size: 20,
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            'Dompet Kampus Global',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                      subtitle: const Text(
+                        'Bayar langsung via e-money',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ),
                   ],
                 ),
               ),
