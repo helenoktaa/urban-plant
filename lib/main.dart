@@ -12,21 +12,19 @@ import 'package:urban_plant/core/providers/theme_provider.dart';
 import 'package:urban_plant/core/theme/app_theme.dart';
 import 'firebase_options.dart';
 
+final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inisialisasi Firebase SEBELUM runApp
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // Inisialisasi deep link service
   final deeplinkService = PaymentDeeplinkService();
   await deeplinkService.init();
 
-  // Listener global — aktif selama app hidup, tidak tergantung halaman aktif
   deeplinkService.onCallback.listen((data) async {
-    debugPrint(
-      '[Main] Callback diterima: status=${data.status}, ref=${data.reference}',
-    );
+    debugPrint('[Main] Callback diterima: status=${data.status}, ref=${data.reference}');
 
     if (!data.isSuccess) {
       debugPrint('[Main] Status bukan success, diabaikan');
@@ -46,9 +44,29 @@ void main() async {
 
     await deeplinkService.updatePaymentStatus(orderId);
     debugPrint('[Main] Payment berhasil diupdate untuk order #$orderId');
+
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    debugPrint('ScaffoldKey mounted: ${scaffoldMessengerKey.currentState != null}');
+
+    scaffoldMessengerKey.currentState?.showSnackBar(
+      SnackBar(
+        content: const Row(
+          children: [
+            Icon(Icons.check_circle, color: Colors.white, size: 20),
+            SizedBox(width: 8),
+            Expanded(
+              child: Text('Pembayaran berhasil! Pesanan sedang diproses.'),
+            ),
+          ],
+        ),
+        backgroundColor: const Color(0xFF2E7D32),
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 4),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
   });
-
-
 
   runApp(
     MultiProvider(
@@ -73,6 +91,7 @@ class MyApp extends StatelessWidget {
     final themeProvider = context.watch<ThemeProvider>();
 
     return MaterialApp(
+      scaffoldMessengerKey: scaffoldMessengerKey,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
