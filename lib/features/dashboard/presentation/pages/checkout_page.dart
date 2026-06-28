@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:urban_plant/core/constants/api_constants.dart';
@@ -20,13 +21,68 @@ class _CheckoutPageState extends State<CheckoutPage> {
   String _paymentMethod = 'transfer';
   bool _isLoading = false;
 
+  StreamSubscription<PaymentCallbackData>? _paymentSub;
+  int? _pendingOrderId;
+
+  @override
+  void initState() {
+    super.initState();
+    _paymentSub = PaymentDeeplinkService().onCallback.listen(_onPaymentCallback);
+  }
+
   @override
   void dispose() {
+    _paymentSub?.cancel();
     _addressCtrl.dispose();
     _notesCtrl.dispose();
     super.dispose();
   }
 
+  // ─── Callback dari dompet_kampus ─────────────────────────────
+  void _onPaymentCallback(PaymentCallbackData data) async {
+    if (!mounted) return;
+
+    if (data.isSuccess && _pendingOrderId != null) {
+      // Update payment status ke backend
+      try {
+        await DioClient.instance.put(
+          '${ApiConstants.orders}/$_pendingOrderId/payment',
+          data: {'payment_status': 'paid'},
+        );
+      } catch (e) {
+        debugPrint('[Checkout] Gagal update payment status: $e');
+      }
+
+      // Refresh cart
+      if (!mounted) return;
+      await context.read<CartProvider>().fetchCart();
+
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => OrderSuccessPage(
+            order: {
+              'id': _pendingOrderId,
+              'total_amount': 0,
+              'shipping_address': _addressCtrl.text.trim(),
+              'notes': 'Pembayaran via Dompet Kampus Global',
+            },
+          ),
+        ),
+      );
+    } else if (!data.isSuccess) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Pembayaran gagal atau dibatalkan'),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
+  // ─── Helper ──────────────────────────────────────────────────
   String _formatPrice(double price) {
     final p = price.toInt();
     return p.toString().replaceAllMapped(
@@ -35,6 +91,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
+  // ─── Checkout utama ──────────────────────────────────────────
   Future<void> _checkout() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -81,6 +138,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     }
   }
 
+  // ─── Bayar via Dompet Kampus ─────────────────────────────────
   Future<void> _payWithDompetKampus() async {
     final cart = context.read<CartProvider>();
     setState(() => _isLoading = true);
@@ -101,6 +159,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
         final totalAmount =
             (order['total_amount'] as num?)?.toDouble() ?? cart.totalPrice;
 
+        _pendingOrderId = orderId; // ← simpan untuk callback
+
         final url = PaymentDeeplinkService.buildPaymentUrl(
           orderId: orderId,
           amount: totalAmount,
@@ -109,6 +169,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
         final uri = Uri.parse(url);
         await launchUrl(uri, mode: LaunchMode.externalApplication);
+        // App berpindah ke dompet_kampus
+        // Callback masuk lewat _onPaymentCallback saat deep link balik
       }
     } catch (e) {
       if (!mounted) return;
@@ -120,6 +182,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     }
   }
 
+  // ─── Build ───────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     final cart = context.watch<CartProvider>();
@@ -142,7 +205,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Ringkasan pesanan
+              // ── Ringkasan pesanan ──────────────────────────────
               const Text(
                 'Ringkasan Pesanan',
                 style: TextStyle(
@@ -254,7 +317,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
               const SizedBox(height: 24),
 
-              // Alamat pengiriman
+              // ── Alamat pengiriman ──────────────────────────────
               const Text(
                 'Alamat Pengiriman',
                 style: TextStyle(
@@ -293,7 +356,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
               const SizedBox(height: 16),
 
-              // Catatan
+              // ── Catatan ────────────────────────────────────────
               const Text(
                 'Catatan (opsional)',
                 style: TextStyle(
@@ -327,7 +390,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
               const SizedBox(height: 24),
 
-              // Metode Pembayaran
+              // ── Metode pembayaran ──────────────────────────────
               const Text(
                 'Metode Pembayaran',
                 style: TextStyle(
@@ -350,7 +413,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 ),
                 child: Column(
                   children: [
-                    // Transfer Bank
                     RadioListTile<String>(
                       value: 'transfer',
                       groupValue: _paymentMethod,
@@ -358,28 +420,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       activeColor: const Color(0xFF2E7D32),
                       title: const Row(
                         children: [
-                          Icon(
-                            Icons.account_balance_outlined,
-                            color: Color(0xFF2E7D32),
-                            size: 20,
-                          ),
+                          Icon(Icons.account_balance_outlined,
+                              color: Color(0xFF2E7D32), size: 20),
                           SizedBox(width: 8),
-                          Text(
-                            'Transfer Bank',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                          ),
+                          Text('Transfer Bank',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 14)),
                         ],
                       ),
-                      subtitle: const Text(
-                        'BCA, BNI, BRI, Mandiri',
-                        style: TextStyle(fontSize: 12),
-                      ),
+                      subtitle: const Text('BCA, BNI, BRI, Mandiri',
+                          style: TextStyle(fontSize: 12)),
                     ),
                     const Divider(height: 1),
-                    // COD
                     RadioListTile<String>(
                       value: 'cod',
                       groupValue: _paymentMethod,
@@ -387,28 +439,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       activeColor: const Color(0xFF2E7D32),
                       title: const Row(
                         children: [
-                          Icon(
-                            Icons.delivery_dining_outlined,
-                            color: Color(0xFF2E7D32),
-                            size: 20,
-                          ),
+                          Icon(Icons.delivery_dining_outlined,
+                              color: Color(0xFF2E7D32), size: 20),
                           SizedBox(width: 8),
-                          Text(
-                            'COD (Bayar di Tempat)',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                          ),
+                          Text('COD (Bayar di Tempat)',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 14)),
                         ],
                       ),
-                      subtitle: const Text(
-                        'Bayar ketika pesanan sudah sampai',
-                        style: TextStyle(fontSize: 12),
-                      ),
+                      subtitle: const Text('Bayar ketika pesanan sudah sampai',
+                          style: TextStyle(fontSize: 12)),
                     ),
                     const Divider(height: 1),
-                    // Dompet Kampus Global
                     RadioListTile<String>(
                       value: 'dompet_kampus',
                       groupValue: _paymentMethod,
@@ -416,25 +458,16 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       activeColor: const Color(0xFF2E7D32),
                       title: const Row(
                         children: [
-                          Icon(
-                            Icons.account_balance_wallet_outlined,
-                            color: Color(0xFF2E7D32),
-                            size: 20,
-                          ),
+                          Icon(Icons.account_balance_wallet_outlined,
+                              color: Color(0xFF2E7D32), size: 20),
                           SizedBox(width: 8),
-                          Text(
-                            'Dompet Kampus Global',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                          ),
+                          Text('Dompet Kampus Global',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 14)),
                         ],
                       ),
-                      subtitle: const Text(
-                        'Bayar langsung via e-money',
-                        style: TextStyle(fontSize: 12),
-                      ),
+                      subtitle: const Text('Bayar langsung via e-money',
+                          style: TextStyle(fontSize: 12)),
                     ),
                   ],
                 ),
@@ -452,19 +485,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   ),
                   child: const Row(
                     children: [
-                      Icon(
-                        Icons.info_outline,
-                        color: Color(0xFFF57F17),
-                        size: 20,
-                      ),
+                      Icon(Icons.info_outline,
+                          color: Color(0xFFF57F17), size: 20),
                       SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           'Bayar nanti ya ketika pesanan sudah sampai di tanganmu! 🌿',
                           style: TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFFF57F17),
-                          ),
+                              fontSize: 12, color: Color(0xFFF57F17)),
                         ),
                       ),
                     ],
@@ -487,39 +515,54 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     children: [
                       Row(
                         children: [
-                          Icon(
-                            Icons.info_outline,
-                            color: Color(0xFF2E7D32),
-                            size: 20,
-                          ),
+                          Icon(Icons.info_outline,
+                              color: Color(0xFF2E7D32), size: 20),
                           SizedBox(width: 8),
                           Text(
                             'Info Transfer Bank',
                             style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF2E7D32),
-                            ),
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF2E7D32)),
                           ),
                         ],
                       ),
                       SizedBox(height: 8),
-                      Text(
-                        'BCA  : 1234567890 (Urban Plant)',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                      Text(
-                        'BNI  : 0987654321 (Urban Plant)',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                      Text(
-                        'BRI  : 1122334455 (Urban Plant)',
-                        style: TextStyle(fontSize: 12),
-                      ),
+                      Text('BCA  : 1234567890 (Urban Plant)',
+                          style: TextStyle(fontSize: 12)),
+                      Text('BNI  : 0987654321 (Urban Plant)',
+                          style: TextStyle(fontSize: 12)),
+                      Text('BRI  : 1122334455 (Urban Plant)',
+                          style: TextStyle(fontSize: 12)),
                       SizedBox(height: 4),
-                      Text(
-                        '*Transfer sesuai total pesanan',
-                        style: TextStyle(fontSize: 11, color: Colors.grey),
+                      Text('*Transfer sesuai total pesanan',
+                          style: TextStyle(fontSize: 11, color: Colors.grey)),
+                    ],
+                  ),
+                ),
+              ],
+
+              // Info Dompet Kampus
+              if (_paymentMethod == 'dompet_kampus') ...[
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE8F5E9),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFA5D6A7)),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.info_outline,
+                          color: Color(0xFF2E7D32), size: 20),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Kamu akan diarahkan ke Dompet Kampus Global untuk menyelesaikan pembayaran.',
+                          style: TextStyle(
+                              fontSize: 12, color: Color(0xFF2E7D32)),
+                        ),
                       ),
                     ],
                   ),
@@ -528,7 +571,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
               const SizedBox(height: 32),
 
-              // Tombol checkout
+              // ── Tombol checkout ────────────────────────────────
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -546,9 +589,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       : Text(
                           'Pesan Sekarang • Rp ${_formatPrice(cart.totalPrice)}',
                           style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
+                              fontSize: 15, fontWeight: FontWeight.w600),
                         ),
                 ),
               ),
@@ -584,7 +625,6 @@ class OrderSuccessPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Icon sukses
               Container(
                 width: 100,
                 height: 100,
@@ -592,11 +632,8 @@ class OrderSuccessPage extends StatelessWidget {
                   color: Color(0xFFE8F5E9),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
-                  Icons.check_circle,
-                  size: 60,
-                  color: Color(0xFF2E7D32),
-                ),
+                child: const Icon(Icons.check_circle,
+                    size: 60, color: Color(0xFF2E7D32)),
               ),
               const SizedBox(height: 24),
               const Text(
@@ -613,8 +650,6 @@ class OrderSuccessPage extends StatelessWidget {
                 style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
               ),
               const SizedBox(height: 32),
-
-              // Detail order
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
@@ -646,8 +681,6 @@ class OrderSuccessPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 32),
-
-              // Tombol kembali
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(

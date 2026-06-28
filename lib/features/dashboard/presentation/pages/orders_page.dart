@@ -11,7 +11,6 @@ class OrdersPage extends StatefulWidget {
 }
 
 class _OrdersPageState extends State<OrdersPage> {
-  // ─── Warna tema ──────────────────────────────────────────────
   static const _green900 = Color(0xFF1B5E20);
   static const _green700 = Color(0xFF2E7D32);
   static const _green50  = Color(0xFFE8F5E9);
@@ -25,7 +24,6 @@ class _OrdersPageState extends State<OrdersPage> {
     });
   }
 
-  // ─── Helper ──────────────────────────────────────────────────
   String _formatPrice(double price) {
     return price
         .toInt()
@@ -46,7 +44,6 @@ class _OrdersPageState extends State<OrdersPage> {
     }
   }
 
-  // ─── Build ───────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,7 +80,6 @@ class _OrdersPageState extends State<OrdersPage> {
     );
   }
 
-  // ─── Empty state ─────────────────────────────────────────────
   Widget _buildEmptyState() {
     return Center(
       child: Column(
@@ -92,7 +88,7 @@ class _OrdersPageState extends State<OrdersPage> {
           Container(
             width: 96,
             height: 96,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: _green50,
               shape: BoxShape.circle,
             ),
@@ -117,7 +113,6 @@ class _OrdersPageState extends State<OrdersPage> {
     );
   }
 
-  // ─── Order card ──────────────────────────────────────────────
   Widget _buildOrderCard(OrderModel order) {
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
@@ -145,7 +140,6 @@ class _OrdersPageState extends State<OrdersPage> {
     );
   }
 
-  // ─── Header: ID + status ─────────────────────────────────────
   Widget _buildCardHeader(OrderModel order) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -185,17 +179,25 @@ class _OrdersPageState extends State<OrdersPage> {
             ),
           ),
 
-          // Badge status
-          _StatusBadge(
-            label: order.statusLabel,
-            color: order.statusColor,
+          // Badge paid + badge status
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (order.isPaid) ...[
+                const _PaidBadge(),
+                const SizedBox(width: 6),
+              ],
+              _StatusBadge(
+                label: order.statusLabel,
+                color: order.statusColor,
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  // ─── Daftar item ─────────────────────────────────────────────
   Widget _buildItemList(OrderModel order) {
     return Column(
       children: order.items.map((item) {
@@ -203,7 +205,6 @@ class _OrdersPageState extends State<OrdersPage> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Row(
             children: [
-              // Thumbnail placeholder
               Container(
                 width: 42,
                 height: 42,
@@ -214,8 +215,6 @@ class _OrdersPageState extends State<OrdersPage> {
                 child: const Icon(Icons.local_florist, color: _green700, size: 20),
               ),
               const SizedBox(width: 12),
-
-              // Nama & qty
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,8 +237,6 @@ class _OrdersPageState extends State<OrdersPage> {
                   ],
                 ),
               ),
-
-              // Subtotal
               Text(
                 'Rp ${_formatPrice(item.subtotal)}',
                 style: const TextStyle(
@@ -255,14 +252,12 @@ class _OrdersPageState extends State<OrdersPage> {
     );
   }
 
-  // ─── Footer: alamat + total ───────────────────────────────────
   Widget _buildCardFooter(OrderModel order) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          // Alamat & catatan
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,10 +276,7 @@ class _OrdersPageState extends State<OrdersPage> {
               ],
             ),
           ),
-
           const SizedBox(width: 12),
-
-          // Total
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -311,7 +303,6 @@ class _OrdersPageState extends State<OrdersPage> {
 
 // ─── Widget pembantu ─────────────────────────────────────────────
 
-/// Badge status pesanan (pending, proses, selesai, dll.)
 class _StatusBadge extends StatelessWidget {
   const _StatusBadge({required this.label, required this.color});
   final String label;
@@ -339,7 +330,36 @@ class _StatusBadge extends StatelessWidget {
   }
 }
 
-/// Baris ikon + teks kecil (alamat / catatan)
+class _PaidBadge extends StatelessWidget {
+  const _PaidBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+      decoration: BoxDecoration(
+        color: const Color(0xFF2E7D32),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.check_circle_outline, size: 11, color: Colors.white),
+          SizedBox(width: 3),
+          Text(
+            'Paid',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _MetaRow extends StatelessWidget {
   const _MetaRow({required this.icon, required this.text});
   final IconData icon;

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
+import 'package:urban_plant/core/constants/api_constants.dart';
+import 'package:urban_plant/core/services/dio_client.dart';
 
 class PaymentCallbackData {
   final String status;
@@ -55,6 +57,19 @@ class PaymentDeeplinkService {
 
     _callbackController.add(data);
     debugPrint('[PaymentDeeplinkService] Callback: ${data.status}');
+  }
+
+  /// Update payment status ke backend urban_plant
+  Future<void> updatePaymentStatus(int orderId) async {
+    try {
+      await DioClient.instance.put(
+        '${ApiConstants.orders}/$orderId/payment',
+        data: {'payment_status': 'paid'},
+      );
+      debugPrint('[PaymentDeeplinkService] Payment status updated untuk order #$orderId');
+    } catch (e) {
+      debugPrint('[PaymentDeeplinkService] Gagal update payment status: $e');
+    }
   }
 
   /// Build URL deeplink ke dompet_kampus_global

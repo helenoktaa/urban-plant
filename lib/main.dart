@@ -21,8 +21,6 @@ void main() async {
   // Inisialisasi deep link service
   await PaymentDeeplinkService().init();
 
-
-
   runApp(
     MultiProvider(
       providers: [
