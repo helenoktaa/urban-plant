@@ -13,8 +13,8 @@ class OrdersPage extends StatefulWidget {
 class _OrdersPageState extends State<OrdersPage> {
   static const _green900 = Color(0xFF1B5E20);
   static const _green700 = Color(0xFF2E7D32);
-  static const _green50  = Color(0xFFE8F5E9);
-  static const _bg       = Color(0xFFF7F9F7);
+  static const _green50 = Color(0xFFE8F5E9);
+  static const _bg = Color(0xFFF7F9F7);
 
   @override
   void initState() {
@@ -25,18 +25,29 @@ class _OrdersPageState extends State<OrdersPage> {
   }
 
   String _formatPrice(double price) {
-    return price
-        .toInt()
-        .toString()
-        .replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.');
+    return price.toInt().toString().replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (m) => '${m[1]}.',
+    );
   }
 
   String _formatDate(String dateStr) {
     try {
       final d = DateTime.parse(dateStr);
       final months = [
-        '', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-        'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+        '',
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'Mei',
+        'Jun',
+        'Jul',
+        'Agu',
+        'Sep',
+        'Okt',
+        'Nov',
+        'Des',
       ];
       return '${d.day} ${months[d.month]} ${d.year}';
     } catch (_) {
@@ -73,7 +84,8 @@ class _OrdersPageState extends State<OrdersPage> {
           return ListView.builder(
             padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
             itemCount: orderProvider.orders.length,
-            itemBuilder: (context, i) => _buildOrderCard(orderProvider.orders[i]),
+            itemBuilder: (context, i) =>
+                _buildOrderCard(orderProvider.orders[i]),
           );
         },
       ),
@@ -92,7 +104,11 @@ class _OrdersPageState extends State<OrdersPage> {
               color: _green50,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.shopping_bag_outlined, size: 44, color: _green700),
+            child: const Icon(
+              Icons.shopping_bag_outlined,
+              size: 44,
+              color: _green700,
+            ),
           ),
           const SizedBox(height: 20),
           const Text(
@@ -153,7 +169,11 @@ class _OrdersPageState extends State<OrdersPage> {
               color: _green50,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.receipt_long_outlined, color: _green700, size: 18),
+            child: const Icon(
+              Icons.receipt_long_outlined,
+              color: _green700,
+              size: 18,
+            ),
           ),
           const SizedBox(width: 12),
 
@@ -187,10 +207,7 @@ class _OrdersPageState extends State<OrdersPage> {
                 const _PaidBadge(),
                 const SizedBox(width: 6),
               ],
-              _StatusBadge(
-                label: order.statusLabel,
-                color: order.statusColor,
-              ),
+              _StatusBadge(label: order.statusLabel, color: order.statusColor),
             ],
           ),
         ],
@@ -212,7 +229,11 @@ class _OrdersPageState extends State<OrdersPage> {
                   color: _green50,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(Icons.local_florist, color: _green700, size: 20),
+                child: const Icon(
+                  Icons.local_florist,
+                  color: _green700,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -232,7 +253,10 @@ class _OrdersPageState extends State<OrdersPage> {
                     const SizedBox(height: 2),
                     Text(
                       '${item.quantity}x  •  Rp ${_formatPrice(item.price)}',
-                      style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade500,
+                      ),
                     ),
                   ],
                 ),
@@ -255,43 +279,66 @@ class _OrdersPageState extends State<OrdersPage> {
   Widget _buildCardFooter(OrderModel order) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _MetaRow(
-                  icon: Icons.location_on_outlined,
-                  text: order.shippingAddress,
+          // Metode pembayaran
+          Row(
+            children: [
+              Icon(
+                order.paymentMethodIcon,
+                size: 13,
+                color: Colors.grey.shade400,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                order.paymentMethodLabel,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.w500,
                 ),
-                if (order.notes.isNotEmpty) ...[
-                  const SizedBox(height: 4),
-                  _MetaRow(
-                    icon: Icons.notes_outlined,
-                    text: order.notes,
-                  ),
-                ],
-              ],
-            ),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Column(
+          const SizedBox(height: 6),
+
+          Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
-                'Total',
-                style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                'Rp ${_formatPrice(order.totalAmount)}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 15,
-                  color: _green900,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _MetaRow(
+                      icon: Icons.location_on_outlined,
+                      text: order.shippingAddress,
+                    ),
+                    if (order.notes.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      _MetaRow(icon: Icons.notes_outlined, text: order.notes),
+                    ],
+                  ],
                 ),
+              ),
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    'Total',
+                    style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Rp ${_formatPrice(order.totalAmount)}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                      color: _green900,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
