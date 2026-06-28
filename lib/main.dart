@@ -19,7 +19,24 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Inisialisasi deep link service
-  await PaymentDeeplinkService().init();
+  final deeplinkService = PaymentDeeplinkService();
+  await deeplinkService.init();
+
+  // Listener global — aktif selama app hidup, tidak tergantung halaman aktif
+  deeplinkService.onCallback.listen((data) async {
+    if (!data.isSuccess) return;
+
+    // Ambil orderId dari reference (format: INV-{orderId})
+    final ref = data.reference ?? '';
+    final orderId = int.tryParse(ref.replaceFirst('INV-', ''));
+    if (orderId == null) {
+      debugPrint('[Main] Reference tidak valid: $ref');
+      return;
+    }
+
+    await deeplinkService.updatePaymentStatus(orderId);
+    debugPrint('[Main] Payment berhasil diupdate untuk order #$orderId');
+  });
 
   runApp(
     MultiProvider(
