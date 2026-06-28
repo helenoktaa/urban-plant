@@ -118,7 +118,7 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
         unselectedLabelStyle: const TextStyle(fontSize: 11),
         elevation: 0,
-        items: const [
+        items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
             activeIcon: Icon(Icons.home),
@@ -130,8 +130,28 @@ class _DashboardPageState extends State<DashboardPage> {
             label: 'Wishlist',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart_outlined),
-            activeIcon: Icon(Icons.shopping_cart),
+            icon: Consumer<CartProvider>(
+              builder: (context, cart, _) => Badge(
+                isLabelVisible: cart.totalItems > 0,
+                label: Text(
+                  cart.totalItems > 9 ? '9+' : '${cart.totalItems}',
+                  style: const TextStyle(fontSize: 10),
+                ),
+                backgroundColor: const Color(0xFF2E7D32),
+                child: const Icon(Icons.shopping_cart_outlined),
+              ),
+            ),
+            activeIcon: Consumer<CartProvider>(
+              builder: (context, cart, _) => Badge(
+                isLabelVisible: cart.totalItems > 0,
+                label: Text(
+                  cart.totalItems > 9 ? '9+' : '${cart.totalItems}',
+                  style: const TextStyle(fontSize: 10),
+                ),
+                backgroundColor: const Color(0xFF2E7D32),
+                child: const Icon(Icons.shopping_cart),
+              ),
+            ),
             label: 'Cart',
           ),
           BottomNavigationBarItem(
