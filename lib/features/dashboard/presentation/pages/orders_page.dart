@@ -11,6 +11,12 @@ class OrdersPage extends StatefulWidget {
 }
 
 class _OrdersPageState extends State<OrdersPage> {
+  // ─── Warna tema ──────────────────────────────────────────────
+  static const _green900 = Color(0xFF1B5E20);
+  static const _green700 = Color(0xFF2E7D32);
+  static const _green50  = Color(0xFFE8F5E9);
+  static const _bg       = Color(0xFFF7F9F7);
+
   @override
   void initState() {
     super.initState();
@@ -19,180 +25,342 @@ class _OrdersPageState extends State<OrdersPage> {
     });
   }
 
+  // ─── Helper ──────────────────────────────────────────────────
   String _formatPrice(double price) {
-    final p = price.toInt();
-    return p.toString().replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (m) => '${m[1]}.',
-    );
+    return price
+        .toInt()
+        .toString()
+        .replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.');
   }
 
   String _formatDate(String dateStr) {
     try {
-      final date = DateTime.parse(dateStr);
-      return '${date.day}/${date.month}/${date.year}';
+      final d = DateTime.parse(dateStr);
+      final months = [
+        '', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+        'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+      ];
+      return '${d.day} ${months[d.month]} ${d.year}';
     } catch (_) {
       return dateStr;
     }
   }
 
+  // ─── Build ───────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F0),
+      backgroundColor: _bg,
       appBar: AppBar(
-        title: const Text('Pesanan Saya'),
-        backgroundColor: const Color(0xFF2E7D32),
+        title: const Text(
+          'Pesanan Saya',
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+        ),
+        backgroundColor: _green700,
         foregroundColor: Colors.white,
         elevation: 0,
+        centerTitle: false,
       ),
       body: Consumer<OrderProvider>(
-        builder: (context, order, _) {
-          if (order.isLoading) {
+        builder: (context, orderProvider, _) {
+          if (orderProvider.isLoading) {
             return const Center(
-              child: CircularProgressIndicator(color: Color(0xFF2E7D32)),
+              child: CircularProgressIndicator(color: _green700),
             );
           }
 
-          if (order.orders.isEmpty) {
-            return const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.shopping_bag_outlined, size: 80, color: Color(0xFFE8F5E9)),
-                  SizedBox(height: 16),
-                  Text('Belum ada pesanan',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF1B5E20))),
-                  SizedBox(height: 8),
-                  Text('Yuk mulai belanja!', style: TextStyle(fontSize: 13, color: Colors.grey)),
-                ],
-              ),
-            );
+          if (orderProvider.orders.isEmpty) {
+            return _buildEmptyState();
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: order.orders.length,
-            itemBuilder: (context, i) => _buildOrderCard(order.orders[i]),
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+            itemCount: orderProvider.orders.length,
+            itemBuilder: (context, i) => _buildOrderCard(orderProvider.orders[i]),
           );
         },
       ),
     );
   }
 
+  // ─── Empty state ─────────────────────────────────────────────
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 96,
+            height: 96,
+            decoration: BoxDecoration(
+              color: _green50,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.shopping_bag_outlined, size: 44, color: _green700),
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'Belum ada pesanan',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: _green900,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Yuk mulai belanja tanaman favoritmu!',
+            style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─── Order card ──────────────────────────────────────────────
   Widget _buildOrderCard(OrderModel order) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header order
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          _buildCardHeader(order),
+          const Divider(height: 1, thickness: 1, color: Color(0xFFF0F0F0)),
+          _buildItemList(order),
+          const Divider(height: 1, thickness: 1, color: Color(0xFFF0F0F0)),
+          _buildCardFooter(order),
+        ],
+      ),
+    );
+  }
+
+  // ─── Header: ID + status ─────────────────────────────────────
+  Widget _buildCardHeader(OrderModel order) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      child: Row(
+        children: [
+          // Ikon order
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: _green50,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(Icons.receipt_long_outlined, color: _green700, size: 18),
+          ),
+          const SizedBox(width: 12),
+
+          // ID & tanggal
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Order #${order.id}',
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF1B5E20))),
-                    const SizedBox(height: 4),
-                    Text(_formatDate(order.createdAt),
-                      style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
-                  ],
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: order.statusColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: order.statusColor.withOpacity(0.3)),
+                Text(
+                  'Order #${order.id}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                    color: _green900,
                   ),
-                  child: Text(order.statusLabel,
-                    style: TextStyle(color: order.statusColor, fontSize: 12, fontWeight: FontWeight.w600)),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  _formatDate(order.createdAt),
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
                 ),
               ],
             ),
           ),
 
-          const Divider(height: 1),
-
-          // List item
-          ...order.items.map((item) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            child: Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE8F5E9),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(Icons.local_florist, color: Color(0xFF2E7D32), size: 20),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(item.productName,
-                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis),
-                      Text('${item.quantity}x Rp ${_formatPrice(item.price)}',
-                        style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
-                    ],
-                  ),
-                ),
-                Text('Rp ${_formatPrice(item.subtotal)}',
-                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Color(0xFF2E7D32))),
-              ],
-            ),
-          )),
-
-          const Divider(height: 1),
-
-          // Footer total
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Alamat: ${order.shippingAddress}',
-                      style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis),
-                    if (order.notes.isNotEmpty)
-                      Text('Catatan: ${order.notes}',
-                        style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    const Text('Total', style: TextStyle(fontSize: 11, color: Colors.grey)),
-                    Text('Rp ${_formatPrice(order.totalAmount)}',
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF1B5E20))),
-                  ],
-                ),
-              ],
-            ),
+          // Badge status
+          _StatusBadge(
+            label: order.statusLabel,
+            color: order.statusColor,
           ),
         ],
       ),
+    );
+  }
+
+  // ─── Daftar item ─────────────────────────────────────────────
+  Widget _buildItemList(OrderModel order) {
+    return Column(
+      children: order.items.map((item) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          child: Row(
+            children: [
+              // Thumbnail placeholder
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: _green50,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.local_florist, color: _green700, size: 20),
+              ),
+              const SizedBox(width: 12),
+
+              // Nama & qty
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.productName,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                        color: Color(0xFF212121),
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${item.quantity}x  •  Rp ${_formatPrice(item.price)}',
+                      style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Subtotal
+              Text(
+                'Rp ${_formatPrice(item.subtotal)}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                  color: _green700,
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  // ─── Footer: alamat + total ───────────────────────────────────
+  Widget _buildCardFooter(OrderModel order) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          // Alamat & catatan
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _MetaRow(
+                  icon: Icons.location_on_outlined,
+                  text: order.shippingAddress,
+                ),
+                if (order.notes.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  _MetaRow(
+                    icon: Icons.notes_outlined,
+                    text: order.notes,
+                  ),
+                ],
+              ],
+            ),
+          ),
+
+          const SizedBox(width: 12),
+
+          // Total
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                'Total',
+                style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                'Rp ${_formatPrice(order.totalAmount)}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 15,
+                  color: _green900,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Widget pembantu ─────────────────────────────────────────────
+
+/// Badge status pesanan (pending, proses, selesai, dll.)
+class _StatusBadge extends StatelessWidget {
+  const _StatusBadge({required this.label, required this.color});
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.10),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.25)),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: color,
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.2,
+        ),
+      ),
+    );
+  }
+}
+
+/// Baris ikon + teks kecil (alamat / catatan)
+class _MetaRow extends StatelessWidget {
+  const _MetaRow({required this.icon, required this.text});
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 13, color: Colors.grey.shade400),
+        const SizedBox(width: 4),
+        Expanded(
+          child: Text(
+            text,
+            style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
     );
   }
 }
