@@ -195,6 +195,29 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Tambah method ini di AuthProvider
+Future<void> initAuth() async {
+  _status = AuthStatus.loading;
+  notifyListeners();
+
+  try {
+    final token = await SecureStorageService.getToken();
+    final firebaseUser = _auth.currentUser;
+
+    if (token != null && firebaseUser != null) {
+      _backendToken = token;
+      _firebaseUser = firebaseUser;
+      _status = AuthStatus.authenticated;
+    } else {
+      _status = AuthStatus.unauthenticated;
+    }
+  } catch (e) {
+    _status = AuthStatus.unauthenticated;
+  }
+
+  notifyListeners();
+}
+
   void _setLoading() {
     _status = AuthStatus.loading;
     _errorMessage = null;

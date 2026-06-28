@@ -24,11 +24,21 @@ void main() async {
 
   // Listener global — aktif selama app hidup, tidak tergantung halaman aktif
   deeplinkService.onCallback.listen((data) async {
-    if (!data.isSuccess) return;
+    debugPrint(
+      '[Main] Callback diterima: status=${data.status}, ref=${data.reference}',
+    );
 
-    // Ambil orderId dari reference (format: INV-{orderId})
+    if (!data.isSuccess) {
+      debugPrint('[Main] Status bukan success, diabaikan');
+      return;
+    }
+
     final ref = data.reference ?? '';
+    debugPrint('[Main] Reference: $ref');
+
     final orderId = int.tryParse(ref.replaceFirst('INV-', ''));
+    debugPrint('[Main] OrderId parsed: $orderId');
+
     if (orderId == null) {
       debugPrint('[Main] Reference tidak valid: $ref');
       return;
@@ -37,6 +47,8 @@ void main() async {
     await deeplinkService.updatePaymentStatus(orderId);
     debugPrint('[Main] Payment berhasil diupdate untuk order #$orderId');
   });
+
+
 
   runApp(
     MultiProvider(
@@ -62,12 +74,9 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-
       themeMode: themeProvider.themeMode,
-
       initialRoute: AppRouter.splash,
       routes: AppRouter.routes,
     );

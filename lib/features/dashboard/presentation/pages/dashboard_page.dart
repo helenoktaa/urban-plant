@@ -770,7 +770,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         Icon(
                           Icons.shopping_cart_outlined,
                           size: 80,
-                          color: Color(0xFFE8F5E9),
+                          color: Color(0xFF1B5E20),
                         ),
                         SizedBox(height: 16),
                         Text(

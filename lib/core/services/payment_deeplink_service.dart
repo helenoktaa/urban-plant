@@ -46,8 +46,14 @@ class PaymentDeeplinkService {
 
   void _handleUri(Uri uri) {
     debugPrint('[PaymentDeeplinkService] URI masuk: $uri');
+    debugPrint(
+      '[PaymentDeeplinkService] scheme: ${uri.scheme}, host: ${uri.host}',
+    );
 
-    if (uri.scheme != 'urbanplant' || uri.host != 'payment-callback') return;
+    if (uri.scheme != 'urbanplant' || uri.host != 'payment-callback') {
+      debugPrint('[PaymentDeeplinkService] URI tidak cocok, diabaikan');
+      return;
+    }
 
     final data = PaymentCallbackData(
       status: uri.queryParameters['status'] ?? 'unknown',
@@ -55,8 +61,12 @@ class PaymentDeeplinkService {
       transactionId: uri.queryParameters['transaction_id'],
     );
 
+    debugPrint('[PaymentDeeplinkService] Sebelum add ke stream');
     _callbackController.add(data);
-    debugPrint('[PaymentDeeplinkService] Callback: ${data.status}');
+    debugPrint('[PaymentDeeplinkService] Sesudah add ke stream');
+    debugPrint(
+      '[PaymentDeeplinkService] hasListener: ${_callbackController.hasListener}',
+    );
   }
 
   /// Update payment status ke backend urban_plant
@@ -66,7 +76,9 @@ class PaymentDeeplinkService {
         '${ApiConstants.orders}/$orderId/payment',
         data: {'payment_status': 'paid'},
       );
-      debugPrint('[PaymentDeeplinkService] Payment status updated untuk order #$orderId');
+      debugPrint(
+        '[PaymentDeeplinkService] Payment status updated untuk order #$orderId',
+      );
     } catch (e) {
       debugPrint('[PaymentDeeplinkService] Gagal update payment status: $e');
     }
