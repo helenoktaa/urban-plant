@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:urban_plant/core/constants/api_constants.dart';
@@ -21,68 +20,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
   String _paymentMethod = 'transfer';
   bool _isLoading = false;
 
-  StreamSubscription<PaymentCallbackData>? _paymentSub;
-  int? _pendingOrderId;
-
-  @override
-  void initState() {
-    super.initState();
-    _paymentSub = PaymentDeeplinkService().onCallback.listen(_onPaymentCallback);
-  }
-
   @override
   void dispose() {
-    _paymentSub?.cancel();
     _addressCtrl.dispose();
     _notesCtrl.dispose();
     super.dispose();
   }
 
-  // ─── Callback dari dompet_kampus ─────────────────────────────
-  void _onPaymentCallback(PaymentCallbackData data) async {
-    if (!mounted) return;
-
-    if (data.isSuccess && _pendingOrderId != null) {
-      // Update payment status ke backend
-      try {
-        await DioClient.instance.put(
-          '${ApiConstants.orders}/$_pendingOrderId/payment',
-          data: {'payment_status': 'paid'},
-        );
-      } catch (e) {
-        debugPrint('[Checkout] Gagal update payment status: $e');
-      }
-
-      // Refresh cart
-      if (!mounted) return;
-      await context.read<CartProvider>().fetchCart();
-
-      if (!mounted) return;
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => OrderSuccessPage(
-            order: {
-              'id': _pendingOrderId,
-              'total_amount': 0,
-              'shipping_address': _addressCtrl.text.trim(),
-              'notes': 'Pembayaran via Dompet Kampus Global',
-            },
-          ),
-        ),
-      );
-    } else if (!data.isSuccess) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Pembayaran gagal atau dibatalkan'),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-    }
-  }
-
-  // ─── Helper ──────────────────────────────────────────────────
   String _formatPrice(double price) {
     final p = price.toInt();
     return p.toString().replaceAllMapped(
@@ -91,7 +35,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
-  // ─── Checkout utama ──────────────────────────────────────────
   Future<void> _checkout() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -138,7 +81,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
     }
   }
 
-  // ─── Bayar via Dompet Kampus ─────────────────────────────────
   Future<void> _payWithDompetKampus() async {
     final cart = context.read<CartProvider>();
     setState(() => _isLoading = true);
@@ -159,8 +101,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
         final totalAmount =
             (order['total_amount'] as num?)?.toDouble() ?? cart.totalPrice;
 
-        _pendingOrderId = orderId; // ← simpan untuk callback
-
         final url = PaymentDeeplinkService.buildPaymentUrl(
           orderId: orderId,
           amount: totalAmount,
@@ -169,8 +109,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
         final uri = Uri.parse(url);
         await launchUrl(uri, mode: LaunchMode.externalApplication);
-        // App berpindah ke dompet_kampus
-        // Callback masuk lewat _onPaymentCallback saat deep link balik
       }
     } catch (e) {
       if (!mounted) return;
@@ -182,7 +120,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
     }
   }
 
-  // ─── Build ───────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     final cart = context.watch<CartProvider>();
