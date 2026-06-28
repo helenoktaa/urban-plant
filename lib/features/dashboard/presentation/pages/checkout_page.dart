@@ -36,90 +36,80 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   Future<void> _checkout() async {
-    if (!_formKey.currentState!.validate()) return;
+  if (!_formKey.currentState!.validate()) return;
 
-    if (_paymentMethod == 'dompet_kampus') {
-      await _payWithDompetKampus();
-      return;
-    }
-
-    setState(() => _isLoading = true);
-    try {
-      final response = await DioClient.instance.post(
-        ApiConstants.checkout,
-        data: {
-          'shipping_address': _addressCtrl.text.trim(),
-          'notes': _notesCtrl.text.trim().isEmpty
-              ? '[Pembayaran: ${_paymentMethod == 'cod' ? 'COD' : 'Transfer Bank'}]'
-              : '${_notesCtrl.text.trim()} | [Pembayaran: ${_paymentMethod == 'cod' ? 'COD' : 'Transfer Bank'}]',
-        },
-      );
-
-      if (!mounted) return;
-
-      if (response.data['success'] == true) {
-        final order = response.data['data'];
-        await context.read<CartProvider>().fetchCart();
-        if (!mounted) return;
-
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => OrderSuccessPage(order: order)),
-        );
-      }
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Checkout gagal: $e'),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
+  if (_paymentMethod == 'dompet_kampus') {
+    await _payWithDompetKampus();
+    return;
   }
 
-  Future<void> _payWithDompetKampus() async {
-    final cart = context.read<CartProvider>();
-    setState(() => _isLoading = true);
-    try {
-      final response = await DioClient.instance.post(
-        ApiConstants.checkout,
-        data: {
-          'shipping_address': _addressCtrl.text.trim().isEmpty
-              ? 'Alamat belum diisi'
-              : _addressCtrl.text.trim(),
-          'notes': 'Pembayaran via Dompet Kampus Global',
-        },
-      );
+  setState(() => _isLoading = true);
+  try {
+    final response = await DioClient.instance.post(
+      ApiConstants.checkout,
+      data: {
+        'shipping_address': _addressCtrl.text.trim(),
+        'notes':            _notesCtrl.text.trim(), 
+        'payment_method':   _paymentMethod,         
+      },
+    );
 
-      if (response.data['success'] == true) {
-        final order = response.data['data'];
-        final orderId = order['ID'] ?? order['id'] ?? 0;
-        final totalAmount =
-            (order['total_amount'] as num?)?.toDouble() ?? cart.totalPrice;
-
-        final url = PaymentDeeplinkService.buildPaymentUrl(
-          orderId: orderId,
-          amount: totalAmount,
-          description: 'Pembayaran Urban Plant #$orderId',
-        );
-
-        final uri = Uri.parse(url);
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      }
-    } catch (e) {
+    if (!mounted) return;
+    if (response.data['success'] == true) {
+      final order = response.data['data'];
+      await context.read<CartProvider>().fetchCart();
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => OrderSuccessPage(order: order)),
       );
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
     }
+  } catch (e) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Checkout gagal: $e'), backgroundColor: Colors.red),
+    );
+  } finally {
+    if (mounted) setState(() => _isLoading = false);
   }
+}
 
+Future<void> _payWithDompetKampus() async {
+  final cart = context.read<CartProvider>();
+  setState(() => _isLoading = true);
+  try {
+    final response = await DioClient.instance.post(
+      ApiConstants.checkout,
+      data: {
+        'shipping_address': _addressCtrl.text.trim().isEmpty
+            ? 'Alamat belum diisi'
+            : _addressCtrl.text.trim(),
+        'notes':          _notesCtrl.text.trim(),
+        'payment_method': 'dompet_kampus',        
+      },
+    );
+
+    if (response.data['success'] == true) {
+      final order   = response.data['data'];
+      final orderId = order['ID'] ?? order['id'] ?? 0;
+      final total   = (order['total_amount'] as num?)?.toDouble() ?? cart.totalPrice;
+
+      final url = PaymentDeeplinkService.buildPaymentUrl(
+        orderId:     orderId,
+        amount:      total,
+        description: 'Pembayaran Urban Plant #$orderId',
+      );
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    }
+  } catch (e) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+    );
+  } finally {
+    if (mounted) setState(() => _isLoading = false);
+  }
+}
   @override
   Widget build(BuildContext context) {
     final cart = context.watch<CartProvider>();

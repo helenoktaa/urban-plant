@@ -35,6 +35,7 @@ class OrderModel {
   final int userId;
   final String status;
   final String paymentStatus;
+   final String paymentMethod; 
   final String? paidAt;
   final double totalAmount;
   final String shippingAddress;
@@ -44,11 +45,26 @@ class OrderModel {
 
   bool get isPaid => paymentStatus == 'paid';
 
+  String get paymentMethodLabel => switch (paymentMethod) {
+    'transfer'      => 'Transfer Bank',
+    'cod'           => 'COD (Bayar di Tempat)',
+    'dompet_kampus' => 'Dompet Kampus Global',
+    _               => paymentMethod,
+  };
+
+  IconData get paymentMethodIcon => switch (paymentMethod) {
+    'transfer'      => Icons.account_balance_outlined,
+    'cod'           => Icons.delivery_dining_outlined,
+    'dompet_kampus' => Icons.account_balance_wallet_outlined,
+    _               => Icons.payment,
+  };
+
   OrderModel({
     required this.id,
     required this.userId,
     required this.status,
     required this.paymentStatus,
+     required this.paymentMethod,
     this.paidAt,
     required this.totalAmount,
     required this.shippingAddress,
@@ -62,6 +78,7 @@ class OrderModel {
     userId: (json['user_id'] as num?)?.toInt() ?? 0,
     status: json['status'] as String? ?? 'pending',
     paymentStatus: json['payment_status'] ?? 'unpaid',
+    paymentMethod:   json['payment_method'] ?? 'transfer', 
     paidAt: json['paid_at'],
     totalAmount: (json['total_amount'] as num?)?.toDouble() ?? 0.0,
     shippingAddress: json['shipping_address'] as String? ?? '',
