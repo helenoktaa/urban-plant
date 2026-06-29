@@ -388,7 +388,7 @@ Future<void> _payWithDompetKampus() async {
                           Icon(Icons.account_balance_wallet_outlined,
                               color: Color(0xFF2E7D32), size: 20),
                           SizedBox(width: 8),
-                          Text('Dompet Kampus Global',
+                          Text('Wallt',
                               style: TextStyle(
                                   fontWeight: FontWeight.w600, fontSize: 14)),
                         ],
@@ -486,7 +486,7 @@ Future<void> _payWithDompetKampus() async {
                       SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Kamu akan diarahkan ke Dompet Kampus Global untuk menyelesaikan pembayaran.',
+                          'Kamu akan diarahkan ke Wallt untuk menyelesaikan pembayaran.',
                           style: TextStyle(
                               fontSize: 12, color: Color(0xFF2E7D32)),
                         ),

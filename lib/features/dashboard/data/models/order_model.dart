@@ -48,7 +48,7 @@ class OrderModel {
   String get paymentMethodLabel => switch (paymentMethod) {
     'transfer'      => 'Transfer Bank',
     'cod'           => 'COD (Bayar di Tempat)',
-    'dompet_kampus' => 'Dompet Kampus Global',
+    'dompet_kampus' => 'Wallt',
     _               => paymentMethod,
   };
 
